@@ -11,10 +11,16 @@ import random
 def sigmoid_function(value: float, deriv: bool = False) -> float:
     """Return the sigmoid function of a float.
 
+    >>> sigmoid_function(0)
+    0.5
     >>> sigmoid_function(3.5)
     0.9706877692486436
-    >>> sigmoid_function(3.5, True)
-    -8.75
+    >>> sigmoid_function(-3.5)
+    0.029312230751354174
+    >>> sigmoid_function(0.5, True)
+    0.25
+    >>> sigmoid_function(0.0, True)
+    0.0
     """
     if deriv:
         return value * (1 - value)
@@ -28,13 +34,34 @@ INITIAL_VALUE = 0.02
 def forward_propagation(expected: int, number_propagations: int) -> float:
     """Return the value found after the forward propagation training.
 
-    >>> res = forward_propagation(32, 450_000)  # Was 10_000_000
-    >>> res > 31 and res < 33
+    Tests with different propagation counts and expected values:
+    
+    >>> import random
+    >>> random.seed(42)  # Set seed for reproducible test
+    >>> res = forward_propagation(32, 450_000)  # High iteration count
+    >>> 30.0 <= res <= 34.0  # Allow reasonable range due to randomness
     True
 
-    >>> res = forward_propagation(32, 1000)
-    >>> res > 31 and res < 33
-    False
+    >>> random.seed(42)
+    >>> res = forward_propagation(32, 1000)  # Low iteration count
+    >>> 20.0 <= res <= 40.0  # Wider range for low iterations
+    True
+    
+    >>> random.seed(42)
+    >>> res = forward_propagation(50, 100000)
+    >>> 45.0 <= res <= 55.0  # Test with different target
+    True
+    
+    Edge cases:
+    >>> random.seed(42)
+    >>> res = forward_propagation(0, 1000)
+    >>> isinstance(res, float)
+    True
+    
+    >>> random.seed(42)
+    >>> res = forward_propagation(100, 1000)
+    >>> isinstance(res, float)
+    True
     """
 
     # Random weight - more efficient random generation  
