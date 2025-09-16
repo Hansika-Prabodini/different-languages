@@ -240,9 +240,9 @@ def sigmoid_derivative(value: np.ndarray) -> np.ndarray:
 
     returns derivative of the sigmoid value
 
-    >>> sigmoid_derivative(np.array(([1, 0, 2], [1, 0, 0]), dtype=np.float64))
-    array([[ 0.,  0., -2.],
-           [ 0.,  0.,  0.]])
+    >>> sigmoid_derivative(np.array(([0.5, 0.0, 0.8], [0.3, 0.0, 0.9]), dtype=np.float64))
+    array([[0.25, 0.  , 0.16],
+           [0.21, 0.  , 0.09]])
     """
     return (value) * (1 - (value))
 
