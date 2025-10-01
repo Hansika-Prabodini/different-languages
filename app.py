@@ -9,12 +9,17 @@ title_and_description = """
 """
 
 def pdf_to_word(pdf_file):
-    docx_filename = pdf_file.name.replace('.pdf', '.docx')
-    
+    # Generate .docx filename in a case-insensitive way and ensure resources are closed
+    root, _ = os.path.splitext(pdf_file.name)
+    docx_filename = root + '.docx'
+
     cv = Converter(pdf_file.name)
-    cv.convert(docx_filename, multi_processing=True, start=0, end=None)
-    cv.close()
-    
+    try:
+        cv.convert(docx_filename, multi_processing=True, start=0, end=None)
+    finally:
+        # Always close the converter even if conversion fails
+        cv.close()
+
     return docx_filename
 
 def word_to_pdf(docx_file):
