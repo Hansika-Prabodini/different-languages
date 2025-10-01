@@ -9,11 +9,21 @@ title_and_description = """
 """
 
 def pdf_to_word(pdf_file):
-    docx_filename = pdf_file.name.replace('.pdf', '.docx')
-    
-    cv = Converter(pdf_file.name)
-    cv.convert(docx_filename, multi_processing=True, start=0, end=None)
-    cv.close()
+    """Convert a PDF file to a Word (.docx) file.
+
+    - Generates the .docx filename using os.path.splitext to handle any case of the extension.
+    - Ensures the Converter is always closed even if conversion raises an exception.
+    """
+    input_path = pdf_file.name
+    base, _ = os.path.splitext(input_path)
+    docx_filename = base + '.docx'
+
+    cv = Converter(input_path)
+    try:
+        cv.convert(docx_filename, multi_processing=True, start=0, end=None)
+    finally:
+        # Always close the converter, even if an exception occurs during convert()
+        cv.close()
     
     return docx_filename
 
@@ -29,9 +39,9 @@ def word_to_pdf(docx_file):
 
     for para in doc.paragraphs:
         text = para.text.strip()
-        if not text:  # Ignorar linhas vazias
+        if not text:  # Ignore empty lines
             continue
-        # Quebrar o texto em várias linhas se necessário
+        # Word-wrap text to fit within page margins
         words = text.split()
         line = ''
         for word in words:
@@ -66,4 +76,5 @@ with gr.Blocks() as app:
                 
                 convert_word_to_pdf.click(word_to_pdf, inputs=[word_input], outputs=[pdf_output])
 
-app.launch()
+if __name__ == "__main__":
+    app.launch()
