@@ -399,6 +399,31 @@ class TestFileConversionEdgeCases(unittest.TestCase):
                 pass
 
 
+class TestPatchedPdfToWord(unittest.TestCase):
+    """Additional tests specifically for the patched behavior in pdf_to_word."""
+
+    @patch('app.Converter')
+    def test_uppercase_extension_and_close_on_failure(self, mock_converter_class):
+        # Arrange
+        mock_converter = Mock()
+        # Simulate failure on convert to ensure close() is still called
+        mock_converter.convert.side_effect = Exception("convert failed")
+        mock_converter_class.return_value = mock_converter
+
+        mock_file = Mock()
+        mock_file.name = "UPPER.PDF"
+
+        # Act + Assert: conversion raises
+        with self.assertRaises(Exception):
+            app.pdf_to_word(mock_file)
+
+        # The output filename should normalize to .docx regardless of extension case
+        expected_docx = "UPPER.docx"
+        mock_converter.convert.assert_called_once_with(expected_docx, multi_processing=True, start=0, end=None)
+        # Converter should always be closed
+        mock_converter.close.assert_called_once()
+
+
 if __name__ == '__main__':
     # Run tests with verbose output
     unittest.main(verbosity=2)

@@ -9,11 +9,21 @@ title_and_description = """
 """
 
 def pdf_to_word(pdf_file):
-    docx_filename = pdf_file.name.replace('.pdf', '.docx')
-    
+    """Convert a PDF file to DOCX.
+
+    Ensures the output filename uses .docx regardless of the input PDF extension case
+    and always closes the Converter even if conversion fails.
+    """
+    # Generate output path robustly (handles .pdf, .PDF, mixed-case)
+    base, _ = os.path.splitext(pdf_file.name)
+    docx_filename = base + '.docx'
+
     cv = Converter(pdf_file.name)
-    cv.convert(docx_filename, multi_processing=True, start=0, end=None)
-    cv.close()
+    try:
+        cv.convert(docx_filename, multi_processing=True, start=0, end=None)
+    finally:
+        # Ensure resources are released even on failure
+        cv.close()
     
     return docx_filename
 
