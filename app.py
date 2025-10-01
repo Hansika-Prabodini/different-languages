@@ -8,13 +8,37 @@ title_and_description = """
 # PDF to Word and Word to PDF converter
 """
 
+def _get_path(obj):
+    """Return a filesystem path from a file-like object or string path."""
+    if hasattr(obj, 'name'):
+        return obj.name
+    if isinstance(obj, str):
+        return obj
+    raise TypeError("Expected a file-like object with .name or a string path")
+
 def pdf_to_word(pdf_file):
-    docx_filename = pdf_file.name.replace('.pdf', '.docx')
-    
-    cv = Converter(pdf_file.name)
-    cv.convert(docx_filename, multi_processing=True, start=0, end=None)
-    cv.close()
-    
+    """Convert a PDF to Word (.docx).
+
+    - Accepts a file-like object with .name or a string path.
+    - Handles case-insensitive .pdf extension correctly.
+    - Ensures converter is closed even if conversion fails.
+    """
+    pdf_path = _get_path(pdf_file)
+
+    root, ext = os.path.splitext(pdf_path)
+    # Replace extension only if it's .pdf in any casing; otherwise append .docx
+    if ext.lower() == '.pdf':
+        docx_filename = root + '.docx'
+    else:
+        docx_filename = pdf_path + '.docx'
+
+    cv = Converter(pdf_path)
+    try:
+        cv.convert(docx_filename, multi_processing=True, start=0, end=None)
+    finally:
+        # Always close even on exceptions to release resources
+        cv.close()
+
     return docx_filename
 
 def word_to_pdf(docx_file):
