@@ -2,6 +2,15 @@
 add some changse to testing purpose
 Comprehensive test suite for file conversion utility (app.py).
 Tests PDF to Word and Word to PDF conversion functionality.
+import unittest
+import tempfile
+import os
+from unittest.mock import Mock, patch, MagicMock, mock_open
+import sys
+
+# Import the module under test
+sys.path.append('.')
+import app
 """
 import unittest
 import tempfile
