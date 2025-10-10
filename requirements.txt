@@ -1,0 +1,35 @@
+# ============================================================================
+# Core Dependencies for PDF/Word Conversion Application
+# ============================================================================
+# These packages are required for the main application functionality.
+# Versions are pinned to ensure reproducible builds and avoid breaking changes.
+
+# Gradio - Modern web UI framework for Python applications
+# Version 4.44.0: Stable release with excellent file handling support
+# Known to work well with Python 3.8+
+gradio==4.44.0
+
+# PDF2DOCX - PDF to Word (DOCX) conversion library
+# Version 0.5.8: Latest stable release with improved table and image extraction
+# Critical for pdf_to_word() function in app.py
+pdf2docx==0.5.8
+
+# Python-DOCX - Word document creation and manipulation
+# Version 1.1.2: Latest stable release with enhanced paragraph/table handling
+# Used for reading Word documents in word_to_pdf() function
+python-docx==1.1.2
+
+# FPDF - PDF generation library
+# Version 1.7.2: Stable version with Unicode support
+# Core dependency for word_to_pdf() conversion functionality
+fpdf==1.7.2
+
+# ============================================================================
+# Optional Security Scanning Tools
+# ============================================================================
+# These packages are used for dependency vulnerability scanning.
+# Install separately with: pip install safety pip-audit
+# Or uncomment below to include in default installation:
+
+# safety==3.2.7          # Checks Python dependencies for known security vulnerabilities
+# pip-audit==2.7.3       # Audits Python packages for known vulnerabilities from PyPI
