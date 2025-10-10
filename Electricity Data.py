@@ -143,7 +143,7 @@ df_cleaned.shape
 # In[15]:
 
 
-SMPEP2_out = (df_cleaned['SMPEP2'] > 0) | (df_cleaned['SMPEP2'] <= 550)
+SMPEP2_out = (df_cleaned['SMPEP2'] > 0) & (df_cleaned['SMPEP2'] <= 550)
 
 
 # In[16]:
@@ -301,10 +301,9 @@ plt.show()
 # In[33]:
 
 
-def periodic_transform(df,variable):
-    # More efficient - calculate angle once
-    max_val = df_scaled[variable].max()
-    angle = 2 * np.pi * df_scaled[variable] / max_val
+def periodic_transform(df, variable, period):
+    # More efficient - calculate angle once using the actual period
+    angle = 2 * np.pi * df_scaled[variable] / period
     df_scaled[f"{variable}_SIN"] = np.sin(angle)
     df_scaled[f"{variable}_COS"] = np.cos(angle)
     return df_scaled
@@ -313,10 +312,15 @@ def periodic_transform(df,variable):
 # In[34]:
 
 
-# Apply all transformations at once
-cyclic_features = ['DayOfWeek', 'Day', 'Month', 'PeriodOfDay']
-for feature in cyclic_features:
-    df_scaled = periodic_transform(df_scaled, feature)
+# Apply all transformations at once with correct periods
+cyclic_features = {
+    'DayOfWeek': 7,      # 7 days in a week
+    'Day': 31,           # Maximum days in a month
+    'Month': 12,         # 12 months in a year
+    'PeriodOfDay': 48    # Assuming 48 half-hour periods in a day
+}
+for feature, period in cyclic_features.items():
+    df_scaled = periodic_transform(df_scaled, feature, period)
 df_scaled.head()
 
 
@@ -434,16 +438,10 @@ bc_rf = rnd_reg.fit(x_train_scaled, y_train)
 # In[47]:
 
 
-y_test_pred_2 = bc_rf.predict(x_test_scaled)
+y_test_pred = bc_rf.predict(x_test_scaled)
 
 
 # In[48]:
-
-
-y_test_pred = best_model.predict(x_test_scaled)
-
-
-# In[ ]:
 
 
 
@@ -467,36 +465,17 @@ y_test_pred = y_test_pred.flatten()
 # In[51]:
 
 
-y_test_pred_2 = y_test_pred.flatten()
+final_df = pd.DataFrame(np.hstack((y_test_pred[:, np.newaxis], y_test[:, np.newaxis])), columns=['Prediction', 'Real'])
 
 
 # In[52]:
 
 
-final_df = pd.DataFrame(np.hstack((y_test_pred[:, np.newaxis], y_test[:, np.newaxis])), columns=['Prediction', 'Real'])
-
-
-# In[53]:
-
-
-final_df = pd.DataFrame(np.hstack((y_test_pred_2[:, np.newaxis], y_test[:, np.newaxis])), columns=['Prediction', 'Real'])
+print(f'MAE: {mean_absolute_error(final_df["Prediction"],final_df["Real"])}')
+print(f'MSE: {mean_squared_error(final_df["Prediction"],final_df["Real"])}')
 
 
 # In[54]:
-
-
-print(f'MAE: {mean_absolute_error(final_df["Prediction"],final_df["Real"])}')
-print(f'MSE: {mean_squared_error(final_df["Prediction"],final_df["Real"])}')
-
-
-# In[55]:
-
-
-print(f'MAE: {mean_absolute_error(final_df["Prediction"],final_df["Real"])}')
-print(f'MSE: {mean_squared_error(final_df["Prediction"],final_df["Real"])}')
-
-
-# In[56]:
 
 
 feature_importance = bc_rf.feature_importances_
@@ -520,7 +499,7 @@ plt.gca().invert_yaxis()  # Invert y-axis to show the most important feature at 
 plt.show()
 
 
-# In[57]:
+# In[56]:
 
 
 import torch
