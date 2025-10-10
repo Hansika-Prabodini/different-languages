@@ -15,7 +15,7 @@ sys.path.append('.')
 
 # Import the CNN class from the file
 try:
-    exec(open('file-agent+claude-v4-sonnet_d44a6-neural_network_convolution_neural_network(1).py').read())
+    from cnn_module import CNN
 except Exception as e:
     print(f"Warning: Could not import CNN class: {e}")
     # Create a mock class for testing
