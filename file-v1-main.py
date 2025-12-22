@@ -1,4 +1,5 @@
 import os
+import sys
 from taipy.gui import Gui, State, notify
 import openai
 from dotenv import load_dotenv
